@@ -23,10 +23,18 @@
 }
 .playlist .songs > li:first-child .songThumb {
   border: 0;
-  box-shadow: 0 0 5px #4183C4;  
+  box-shadow: 0 0 5px #4183C4;
 }
 .playlist .songs .empty {
   color: #999;
   font-style: italic;
   text-align: center;
+}
+
+.skip {
+  text-align: center;
+  margin: auto;
+  display: block;
+  width: 100px;
+  margin-top: 2em;
 }
