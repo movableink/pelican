@@ -6,15 +6,37 @@ define [
 ], (Backbone, Mustache, tmpl) ->
 	Backbone.View.extend
 		initialize: (options) ->
-			@ready = false
+      @ready = false
 
-			$.tubeplayer.defaults.afterReady = =>
-				# @$yt.hide()
-				@ready = true
-				@trigger('ready')
+      $.tubeplayer.defaults.afterReady = =>
+        # @$yt.hide()
+        @ready = true
+        @trigger('ready')
 
-			@model.on 'change:song', (song) =>
-				@render()
+      @model.socket.on 'pause', (->
+        @trigger 'pause'
+      ).bind(@model)
+
+      @model.socket.on 'unpause', (->
+        @trigger 'unpause'
+      ).bind(@model)
+
+      @model.on 'change:song', (song) =>
+        @render()
+
+      @model.on 'pause', =>
+        console.log "pause"
+        @pause()
+
+      @model.on 'unpause', =>
+        console.log "pause"
+        @unpause()
+
+    pause: ->
+      @$yt.tubeplayer 'pause'
+
+    unpause: ->
+      @$yt.tubeplayer 'play'
 
 		end: ->
 			@model.next()

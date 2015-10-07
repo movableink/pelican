@@ -1,5 +1,6 @@
 Slack = require 'slack-client'
 api = require './routes/api'
+io = require 'socket.io'
 
 slackToken = process.env.SLACK_TOKEN
 autoReconnect = true
@@ -45,8 +46,19 @@ slack.on 'message', (message) ->
     channel = slack.getChannelGroupOrDMByID(message.channel)
     channel.send response
 
+  if message.text == "pause"
+    console.log slack.io
+    console.log slack.io.sockets
+    slack.io.sockets.emit 'pause'
+
+  if message.text == "play"
+    slack.io.sockets.emit 'unpause'
+
 slack.on 'error', (err) ->
   console.error "Error", err
+
+slack.setSocket = (io) ->
+  @io = io
 
 slack.login()
 
