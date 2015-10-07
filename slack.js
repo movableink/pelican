@@ -19,7 +19,7 @@
   });
 
   slack.on('message', function(message) {
-    var channel, idx, ref, response, url;
+    var channel, idx, ref, ref1, ref2, response, url;
     if ((ref = message.text) != null ? ref.match(/^\<https?:\/\/www.youtube.com/) : void 0) {
       url = message.text.slice(1, -1);
       api.songs.add({
@@ -44,13 +44,20 @@
       channel = slack.getChannelGroupOrDMByID(message.channel);
       channel.send(response);
     }
-    if (message.text === "show queue") {
-      idx = 1;
+    if ((ref1 = message.text) != null ? ref1.match(/queue/) : void 0) {
+      idx = 0;
       response = "Queue:\n";
       api.songs.forEach(function(song) {
-        response += idx + ": " + (song.get('title')) + "\n";
+        if (idx !== 0) {
+          response += idx + ": " + (song.get('title')) + "\n";
+        }
         return idx += 1;
       });
+      channel = slack.getChannelGroupOrDMByID(message.channel);
+      channel.send(response);
+    }
+    if ((ref2 = message.text) != null ? ref2.match(/playing/) : void 0) {
+      response = "Currently Playing: " + (song.at(0).get('title'));
       channel = slack.getChannelGroupOrDMByID(message.channel);
       return channel.send(response);
     }

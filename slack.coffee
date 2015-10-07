@@ -31,12 +31,17 @@ slack.on 'message', (message) ->
     channel = slack.getChannelGroupOrDMByID(message.channel)
     channel.send response
 
-  if message.text == "show queue"
-    idx = 1
+  if message.text?.match(/queue/)
+    idx = 0
     response = "Queue:\n"
     api.songs.forEach (song) ->
-      response += "#{idx}: #{song.get('title')}\n"
+      response += "#{idx}: #{song.get('title')}\n" unless idx == 0
       idx += 1
+    channel = slack.getChannelGroupOrDMByID(message.channel)
+    channel.send response
+
+  if message.text?.match(/playing/)
+    response = "Currently Playing: #{song.at(0).get('title')}"
     channel = slack.getChannelGroupOrDMByID(message.channel)
     channel.send response
 
