@@ -14,7 +14,7 @@ apiError =  (msg) ->
 exports.getSongs = (req, res) ->
 	res.send songs.toJSON()
 
-# GET /songs/:id 
+# GET /songs/:id
 exports.getSong = (req, res) ->
 	song = songs.get req.params.id
 	unless song then res.send 404, apiError('Invalid song id')
@@ -29,11 +29,17 @@ exports.postSong = (req, res) ->
 
 	songs.fetch
 		complete: (model, results, valid, invalid) ->
-			r = 
+			r =
 				ok: !!valid.length
 				song: results[0]
 
 			res.send JSON.stringify(r)
+
+exports.skipSong = (req, res) ->
+  songs.shift()
+
+  res.flash 'info', "Skipped song."
+  res.redirect '/songs'
 
 # GET /nowPlaying/
 exports.getNowPlaying = (req, res) ->

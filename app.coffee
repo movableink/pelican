@@ -3,6 +3,7 @@ routes = require './routes'
 path = require 'path'
 flash = require 'connect-flash'
 app = express()
+slack = require './slack'
 
 # Configuration
 app.configure ->
@@ -25,11 +26,12 @@ app.configure 'development', ->
 # Web routes
 app.get '/songs', routes.web.songs
 app.get '/player', (req, res, next) ->
-	if  req.connection.remoteAddress != '127.0.0.1' then res.send ''
-	else next()
+	#if  req.connection.remoteAddress != '127.0.0.1' then res.send ''
+	next()
 , routes.web.player
 app.get '/add', routes.web.add
 app.post '/add', routes.web.postAdd
+app.get '/skip', routes.api.skipSong
 
 # REST Routes
 app.get '/api/songs', routes.api.getSongs

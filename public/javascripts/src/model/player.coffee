@@ -13,10 +13,12 @@ define ['backbone'], (Backbone) ->
 		initializeSocket: ->
       @socket.on 'songChange', (song) =>
         @set 'song', song
+      @socket.on 'remove', =>
+        @fetch()
 
     next: ->
       @socket.emit 'songNext'
 
 		fetch: ->
-      unless this.socket then return Backbone.Model.prototype.fetch.apply @, arguments 
+      unless this.socket then return Backbone.Model.prototype.fetch.apply @, arguments
       @socket.emit 'whatsPlaying?'

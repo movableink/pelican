@@ -5,7 +5,7 @@ define(['backbone', 'mustache', 'text!/templates/player.tmpl', 'plugin/jquery.tu
       var _this = this;
       this.ready = false;
       $.tubeplayer.defaults.afterReady = function() {
-        _this.$yt.hide();
+        //_this.$yt.hide();
         _this.ready = true;
         return _this.trigger('ready');
       };
@@ -29,7 +29,7 @@ define(['backbone', 'mustache', 'text!/templates/player.tmpl', 'plugin/jquery.tu
         return title.html(song.title);
       } else {
         this.$yt.tubeplayer('stop');
-        this.$yt.hide();
+        //this.$yt.hide();
         return title.html('');
       }
     },

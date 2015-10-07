@@ -1,6 +1,6 @@
 api = require './api'
 
-web = 
+web =
 	songs: (req, res) ->
 		res.render 'songs'
 
@@ -18,7 +18,7 @@ web =
 			web.add req, res
 			return
 
-		api.postSong req, 
+		api.postSong req,
 			send: (txt) ->
 				res.redirect '/songs'
 

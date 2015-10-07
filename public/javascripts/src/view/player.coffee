@@ -1,7 +1,7 @@
 define [
-	'backbone', 
-	'mustache', 
-	'text!/templates/player.tmpl', 
+	'backbone',
+	'mustache',
+	'text!/templates/player.tmpl',
 	'plugin/jquery.tubeplayer'
 ], (Backbone, Mustache, tmpl) ->
 	Backbone.View.extend
@@ -9,7 +9,7 @@ define [
 			@ready = false
 
 			$.tubeplayer.defaults.afterReady = =>
-				@$yt.hide()
+				# @$yt.hide()
 				@ready = true
 				@trigger('ready')
 
@@ -32,7 +32,7 @@ define [
 				title.html song.title
 			else
 				@$yt.tubeplayer 'stop'
-				@$yt.hide()
+				# @$yt.hide()
 				title.html ''
 
 		$yt: null

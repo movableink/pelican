@@ -3,7 +3,7 @@ request = require 'request'
 _ = require 'underscore'
 
 Song = Backbone.Model.extend
-  defaults: 
+  defaults:
     url: ''
     ytId: ''
     title: ''
@@ -17,12 +17,12 @@ Song = Backbone.Model.extend
       unless @get('ytId') then @set 'ytId', Song.ytId(@get('url'))
 
   url: ->
-    'https://gdata.youtube.com/feeds/api/videos/' + @get('ytId') + '?v=2&alt=json'
+    'http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=' + @get('ytId') + '&format=json'
 
   parse: (res) ->
-    url: res.entry.link[0].href
-    title: res.entry.title.$t
-    thumbnail: res.entry.media$group.media$thumbnail[0].url
+    url: "http://www.youtube.com/watch?v=#{@get('ytId')}"
+    title: res.title
+    thumbnail: res.thumbnail_url
 
   fetch: (options) ->
     options = if options then _.clone(options) else {}
@@ -41,7 +41,7 @@ Song = Backbone.Model.extend
 
   isFetched: ->
     @get('title') isnt ''
-, 
+,
   ytId: (url) ->
     url.match(/v=([^&]*)/)[1]
 
