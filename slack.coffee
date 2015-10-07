@@ -41,7 +41,7 @@ slack.on 'message', (message) ->
     channel.send response
 
   if message.text?.match(/playing/)
-    response = "Currently Playing: #{song.at(0).get('title')}"
+    response = "Currently Playing: #{api.songs.at(0).get('title')}"
     channel = slack.getChannelGroupOrDMByID(message.channel)
     channel.send response
 

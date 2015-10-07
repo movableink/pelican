@@ -57,7 +57,7 @@
       channel.send(response);
     }
     if ((ref2 = message.text) != null ? ref2.match(/playing/) : void 0) {
-      response = "Currently Playing: " + (song.at(0).get('title'));
+      response = "Currently Playing: " + (api.songs.at(0).get('title'));
       channel = slack.getChannelGroupOrDMByID(message.channel);
       return channel.send(response);
     }
