@@ -31,6 +31,15 @@ slack.on 'message', (message) ->
     channel = slack.getChannelGroupOrDMByID(message.channel)
     channel.send response
 
+  if message.text == "show queue"
+    idx = 1
+    response = "Queue:\n"
+    api.songs.forEach (song) ->
+      response += "#{idx}: #{song.get('title')}\n"
+      idx += 1
+    channel = slack.getChannelGroupOrDMByID(message.channel)
+    channel.send response
+
 slack.on 'error', (err) ->
   console.error "Error", err
 

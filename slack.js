@@ -6,7 +6,7 @@
 
   api = require('./routes/api');
 
-  slackToken = process.env.SLACK_TOKEN || "xoxb-12081006416-FuChowEjJcl0vMBnW4VxeCC2";
+  slackToken = process.env.SLACK_TOKEN;
 
   autoReconnect = true;
 
@@ -19,7 +19,7 @@
   });
 
   slack.on('message', function(message) {
-    var channel, ref, response, url;
+    var channel, idx, ref, response, url;
     if ((ref = message.text) != null ? ref.match(/^\<https?:\/\/www.youtube.com/) : void 0) {
       url = message.text.slice(1, -1);
       api.songs.add({
@@ -41,6 +41,16 @@
     if (message.text === "skip") {
       api.songs.shift();
       response = "Skipping to the next track";
+      channel = slack.getChannelGroupOrDMByID(message.channel);
+      channel.send(response);
+    }
+    if (message.text === "show queue") {
+      idx = 1;
+      response = "Queue:\n";
+      api.songs.forEach(function(song) {
+        response += idx + ": " + (song.get('title')) + "\n";
+        return idx += 1;
+      });
       channel = slack.getChannelGroupOrDMByID(message.channel);
       return channel.send(response);
     }
