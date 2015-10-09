@@ -41,7 +41,6 @@
       };
     },
     fetch: function(options) {
-      console.log(options);
       options = options ? _.clone(options) : {};
       options.success = options.success || function() {};
       options.error = options.error || function() {};
@@ -49,8 +48,6 @@
         uri: this.url()
       }, (function(_this) {
         return function(err, res, body) {
-          console.log("BODY");
-          console.log(body);
           if (res.statusCode !== 200) {
             options.error(_this);
             return;
@@ -65,7 +62,8 @@
     }
   }, {
     ytId: function(url) {
-      return url.match(/v=([^&]*)/)[1];
+      var ref, ref1;
+      return ((ref = url.match(/[\&\?]v=([^&]*)/)) != null ? ref[1] : void 0) || ((ref1 = url.match(/tu\.be\/([^&]*)/)) != null ? ref1[1] : void 0);
     }
   });
 

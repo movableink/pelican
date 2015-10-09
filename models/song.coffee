@@ -43,6 +43,6 @@ Song = Backbone.Model.extend
     @get('title') isnt ''
 ,
   ytId: (url) ->
-    url.match(/v=([^&]*)/)[1]
+    url.match(/[\&\?]v=([^&]*)/)?[1] or url.match(/tu\.be\/([^&]*)/)?[1]
 
 module.exports = Song
