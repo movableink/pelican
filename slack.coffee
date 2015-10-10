@@ -38,7 +38,7 @@ slack.on 'message', (message) ->
       console.log "Matched command #{p.constructor.name}"
       p.run (response) ->
         if typeof(response) is "string"
-          channel.send "DEV: " + response
+          channel.send response
         if typeof(response) is "object"
           channel.postMessage
             as_user: true
