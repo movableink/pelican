@@ -1,4 +1,4 @@
-var Backbone, Collection, Song, async, _;
+var Backbone, Collection, Song, _, async;
 
 Backbone = require('backbone');
 
@@ -18,13 +18,14 @@ module.exports = Backbone.Collection.extend({
     return this.unfetchedModels = new Collection();
   },
   add: function(models, options) {
-    var fetched, unfetched,
-      _this = this;
+    var fetched, unfetched;
     models = _.isArray(models) ? models.slice() : [models];
-    fetched = _(models).filter(function(model) {
-      model = model instanceof Backbone.Model ? model : new _this.model(model);
-      return !model.isFetched();
-    });
+    fetched = _(models).filter((function(_this) {
+      return function(model) {
+        model = model instanceof Backbone.Model ? model : new _this.model(model);
+        return !model.isFetched();
+      };
+    })(this));
     unfetched = _(models).difference(fetched);
     this.unfetchedModels.add(fetched);
     return Backbone.Collection.prototype.add.call(this, unfetched, options);
@@ -34,35 +35,40 @@ module.exports = Backbone.Collection.extend({
     return Backbone.Collection.prototype.reset.call(this);
   },
   fetch: function(options) {
-    var _this = this;
     options = options || {};
     options.success = options.success || function() {};
     options.error = options.error || function() {};
     options.complete = options.complete || function() {};
-    return async.parallel(this.unfetchedModels.map(function(song) {
-      return function(callback) {
-        return song.fetch({
-          success: function(model, res) {
-            return callback(null, model);
-          },
-          error: function(model, err) {
-            return callback(err, model);
-          }
-        });
+    return async.parallel(this.unfetchedModels.map((function(_this) {
+      return function(song) {
+        return function(callback) {
+          return song.fetch({
+            success: function(model, res) {
+              return callback(null, model);
+            },
+            error: function(model, err) {
+              return callback(err, model);
+            }
+          });
+        };
       };
-    }), function(err, results) {
-      var invalid, valid;
-      valid = _(results).filter(function(model) {
-        return model.isFetched();
-      });
-      invalid = _(results).difference(valid);
-      _this.add(valid);
-      _this.unfetchedModels.reset();
-      if (err) {
-        options.error(_this, invalid);
-      }
-      options.success(_this, valid);
-      return options.complete(_this, results, valid, invalid);
-    });
+    })(this)), (function(_this) {
+      return function(err, results) {
+        var invalid, valid;
+        valid = _(results).filter(function(model) {
+          return model.isFetched();
+        });
+        invalid = _(results).difference(valid);
+        _this.add(valid);
+        _this.unfetchedModels.reset();
+        if (err) {
+          options.error(_this, invalid);
+        }
+        options.success(_this, valid);
+        return options.complete(_this, results, valid, invalid);
+      };
+    })(this));
   }
 });
+
+//# sourceMappingURL=songCollection.js.map

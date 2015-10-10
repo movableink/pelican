@@ -1,4 +1,3 @@
-
 define(['backbone', 'model/songThumb'], function(Backbone, SongThumb) {
   return Backbone.Collection.extend({
     model: SongThumb,
@@ -11,19 +10,26 @@ define(['backbone', 'model/songThumb'], function(Backbone, SongThumb) {
       }
     },
     initializeSocket: function() {
-      var _this = this;
-      this.socket.on('add', function(model) {
-        return _this.add(model);
-      });
-      this.socket.on('remove', function(model) {
-        return _this.remove(model);
-      });
-      this.socket.on('reset', function(models) {
-        return _this.reset(models);
-      });
-      return this.socket.on('change', function(model) {
-        return _this.get(model.id).set(model);
-      });
+      this.socket.on('add', (function(_this) {
+        return function(model) {
+          return _this.add(model);
+        };
+      })(this));
+      this.socket.on('remove', (function(_this) {
+        return function(model) {
+          return _this.remove(model);
+        };
+      })(this));
+      this.socket.on('reset', (function(_this) {
+        return function(models) {
+          return _this.reset(models);
+        };
+      })(this));
+      return this.socket.on('change', (function(_this) {
+        return function(model) {
+          return _this.get(model.id).set(model);
+        };
+      })(this));
     },
     fetch: function() {
       if (!this.socket) {
@@ -33,3 +39,5 @@ define(['backbone', 'model/songThumb'], function(Backbone, SongThumb) {
     }
   });
 });
+
+//# sourceMappingURL=songThumbCollection.js.map

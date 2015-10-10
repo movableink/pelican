@@ -60,3 +60,5 @@ module.exports = {
     return test.done();
   }
 };
+
+//# sourceMappingURL=song.js.map

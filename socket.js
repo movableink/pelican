@@ -1,4 +1,3 @@
-
 module.exports = function(io, songs) {
   io.sockets.on('connection', function(socket) {
     socket.on('fetch', function() {
@@ -28,3 +27,5 @@ module.exports = function(io, songs) {
     return io.sockets.emit('songChange', song);
   });
 };
+
+//# sourceMappingURL=socket.js.map

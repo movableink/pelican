@@ -10,3 +10,5 @@ module.exports = sandbox.require('../../models/song.js', {
     backbone: Backbone
   }
 });
+
+//# sourceMappingURL=song.js.map

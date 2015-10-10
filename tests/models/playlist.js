@@ -64,3 +64,5 @@ module.exports = {
     return playlist.fetch();
   }
 };
+
+//# sourceMappingURL=playlist.js.map

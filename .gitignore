@@ -3,3 +3,4 @@ bin/err.log
 bin/out.log
 npm-debug.log
 .env
+*.map

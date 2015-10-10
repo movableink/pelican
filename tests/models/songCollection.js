@@ -58,15 +58,16 @@ module.exports = {
   },
   fetch: {
     success: function(test) {
-      var _this = this;
       return this.songs.fetch({
-        success: function(collection, results) {
-          test.equal(_this.songs, collection, 'Collection should be a first argument');
-          test.equal(results[0], _this.songs.at(0), 'Results should be an array of added elements');
-          test.equal(_this.songs.at(0).get('title'), 'Epic sax guy 10 hours');
-          test.equal(_this.songs.at(1).get('title'), 'Amelie Soundtrack - Yann Tiersen (Original)');
-          return test.done();
-        }
+        success: (function(_this) {
+          return function(collection, results) {
+            test.equal(_this.songs, collection, 'Collection should be a first argument');
+            test.equal(results[0], _this.songs.at(0), 'Results should be an array of added elements');
+            test.equal(_this.songs.at(0).get('title'), 'Epic sax guy 10 hours');
+            test.equal(_this.songs.at(1).get('title'), 'Amelie Soundtrack - Yann Tiersen (Original)');
+            return test.done();
+          };
+        })(this)
       });
     },
     error: function(test) {
@@ -91,3 +92,5 @@ module.exports = {
     }
   }
 };
+
+//# sourceMappingURL=songCollection.js.map

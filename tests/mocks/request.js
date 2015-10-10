@@ -21,3 +21,5 @@ module.exports = function(options, callback) {
     }, '<errors xmlns=\'http://schemas.google.com/g/2005\'><error><domain>GData</domain><code>InvalidRequestUriException</code><internalReason>Invalid id</internalReason></error></errors>');
   }
 };
+
+//# sourceMappingURL=request.js.map

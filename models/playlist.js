@@ -35,3 +35,5 @@ Playlist = SongCollection.extend({
 });
 
 module.exports = Playlist;
+
+//# sourceMappingURL=playlist.js.map

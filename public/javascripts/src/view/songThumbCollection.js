@@ -1,4 +1,3 @@
-
 define(['underscore', 'backbone', 'view/songThumb'], function(_, Backbone, SongThumb) {
   return Backbone.View.extend({
     tagName: 'ul',
@@ -6,14 +5,17 @@ define(['underscore', 'backbone', 'view/songThumb'], function(_, Backbone, SongT
       className: 'songThumbCollection'
     },
     initialize: function() {
-      var _this = this;
       this.collection.on('reset', this.reset.bind(this));
-      this.collection.on('add', function(model) {
-        return _this.add(model);
-      });
-      return this.collection.on('remove', function(model) {
-        return _this.remove(model);
-      });
+      this.collection.on('add', (function(_this) {
+        return function(model) {
+          return _this.add(model);
+        };
+      })(this));
+      return this.collection.on('remove', (function(_this) {
+        return function(model) {
+          return _this.remove(model);
+        };
+      })(this));
     },
     empty: function() {
       return '<li class="empty">No songs in queue</li>';
@@ -36,21 +38,24 @@ define(['underscore', 'backbone', 'view/songThumb'], function(_, Backbone, SongT
       return view.$el.fadeIn();
     },
     remove: function(model) {
-      var _this = this;
-      return this.views = _(this.views).reject(function(view) {
-        var reject;
-        reject = view.model === model;
-        if (reject) {
-          view.$el.fadeOut(function() {
-            view.remove();
-            if (!_this.views.length) {
-              return _this.$el.html(_this.empty());
-            }
-          });
-        }
-        return reject;
-      });
+      return this.views = _(this.views).reject((function(_this) {
+        return function(view) {
+          var reject;
+          reject = view.model === model;
+          if (reject) {
+            view.$el.fadeOut(function() {
+              view.remove();
+              if (!_this.views.length) {
+                return _this.$el.html(_this.empty());
+              }
+            });
+          }
+          return reject;
+        };
+      })(this));
     },
     views: []
   });
 });
+
+//# sourceMappingURL=songThumbCollection.js.map

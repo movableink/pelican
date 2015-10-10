@@ -1,4 +1,3 @@
-
 define(['socketio', 'model/player', 'view/player'], function(io, PlayerModel, PlayerView) {
   var model, view;
   model = new PlayerModel({}, {
@@ -13,3 +12,5 @@ define(['socketio', 'model/player', 'view/player'], function(io, PlayerModel, Pl
   });
   return view.render();
 });
+
+//# sourceMappingURL=player.js.map

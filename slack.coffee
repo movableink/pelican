@@ -1,6 +1,18 @@
 Slack = require 'slack-client'
 api = require './routes/api'
-io = require 'socket.io'
+fs = require 'fs'
+
+MUSIC_CHANNEL_NAME = process.env.MUSIC_CHANNEL_NAME or "music"
+BOT_NAME = process.env.BOT_NAME or "jukebox"
+
+plugins = []
+
+files = fs.readdirSync './slack/'
+files.forEach (file) ->
+  plugins.push require("./slack/#{file}") if file.match(/\.js$/)
+
+plugins.forEach (plugin) ->
+  console.log "Loaded command: #{plugin.name}"
 
 slackToken = process.env.SLACK_TOKEN
 autoReconnect = true
@@ -12,50 +24,26 @@ slack.on 'open', ->
   console.log "Connected to #{slack.team.name} as #{slack.self.name}"
 
 slack.on 'message', (message) ->
-  msg = message.text or ""
-  msg = msg.toLowerCase()
+  channel = slack.getChannelGroupOrDMByID(message.channel)
+  return unless channel.name is MUSIC_CHANNEL_NAME
 
-  if msg.match(/^\<https?:\/\/www.youtube.com/)
-    url = message.text.slice(1, -1)
+  user = slack.getUserByID(message.user)
+  return if user?.name is BOT_NAME
 
-    api.songs.add { url: url }
-    api.songs.fetch
-      complete: (model, results, valid, invalid) ->
-        r =
-          ok: !!valid.length
-          song: results[0]
+  console.log "Got message: #{message.text}"
 
-        response = "Added track #{r.song.get('title')} (#{api.songs.length - 1} already in queue)"
-        channel = slack.getChannelGroupOrDMByID(message.channel)
-        channel.send response
-  if message.text == "skip"
-    api.songs.shift()
-
-    response = "Skipping to the next track"
-    channel = slack.getChannelGroupOrDMByID(message.channel)
-    channel.send response
-
-  if msg.match(/queue/)
-    idx = 0
-    response = "Queue:\n"
-    api.songs.forEach (song) ->
-      response += "#{idx}: #{song.get('title')}\n" unless idx == 0
-      idx += 1
-    channel = slack.getChannelGroupOrDMByID(message.channel)
-    channel.send response
-
-  if msg.match(/playing/)
-    response = "Currently Playing: #{api.songs.at(0).get('title')}"
-    channel = slack.getChannelGroupOrDMByID(message.channel)
-    channel.send response
-
-  if msg == "pause" or msg == "stop"
-    console.log slack.io
-    console.log slack.io.sockets
-    slack.io.sockets.emit 'pause'
-
-  if msg == "play"
-    slack.io.sockets.emit 'unpause'
+  plugins.forEach (plugin) ->
+    p = new plugin(api, message, slack.io)
+    if p.matches()
+      console.log "Matched command #{p.constructor.name}"
+      p.run (response) ->
+        if typeof(response) is "string"
+          channel.send "DEV: " + response
+        if typeof(response) is "object"
+          channel.postMessage
+            as_user: true
+            text: response.fallback
+            attachments: [response]
 
 slack.on 'error', (err) ->
   console.error "Error", err

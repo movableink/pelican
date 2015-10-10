@@ -1,4 +1,3 @@
-
 define(['backbone'], function(Backbone) {
   return Backbone.Model.extend({
     defaults: {
@@ -8,3 +7,5 @@ define(['backbone'], function(Backbone) {
     }
   });
 });
+
+//# sourceMappingURL=songThumb.js.map

@@ -1,11 +1,11 @@
-
 define(['backbone', 'mustache', 'text!/templates/songThumb.tmpl'], function(Backbone, Mustache, template) {
   return Backbone.View.extend({
     initialize: function() {
-      var _this = this;
-      return this.model.on('change', function() {
-        return _this.render();
-      });
+      return this.model.on('change', (function(_this) {
+        return function() {
+          return _this.render();
+        };
+      })(this));
     },
     render: function() {
       this.$el.html(Mustache.render(template, this.model.toJSON()));
@@ -13,3 +13,5 @@ define(['backbone', 'mustache', 'text!/templates/songThumb.tmpl'], function(Back
     }
   });
 });
+
+//# sourceMappingURL=songThumb.js.map
