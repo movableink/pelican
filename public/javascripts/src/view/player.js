@@ -33,10 +33,17 @@ define(['backbone', 'mustache', 'text!/templates/player.tmpl', 'plugin/jquery.tu
       })(this));
     },
     pause: function() {
+      console.log('pausing');
       return this.$yt.tubeplayer('pause');
     },
     unpause: function() {
-      return this.$yt.tubeplayer('play');
+      if (this.$yt.tubeplayer('player').getPlayerState() < 3) {
+        console.log('unpausing');
+        return this.$yt.tubeplayer('play');
+      } else {
+        console.log('starting playing');
+        return this.update();
+      }
     },
     end: function() {
       return this.model.next();

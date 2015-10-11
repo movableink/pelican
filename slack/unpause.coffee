@@ -4,7 +4,7 @@ class UnpauseCommand extends SlackCommand
   regex: /^(play|unpause)$/
 
   run: (cb) ->
-    @io.sockets.emit 'unpause'
+    @api.songs.unpause()
     cb ":play: Unpaused"
 
 module.exports = UnpauseCommand

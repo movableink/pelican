@@ -1,7 +1,6 @@
 class SlackCommand
-  constructor: (api, message, io) ->
+  constructor: (api, message) ->
     @api = api
-    @io = io
     @message = message
     @text = message.text or ""
 

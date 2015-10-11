@@ -11,7 +11,7 @@ QueueCommand = (function(superClass) {
     return QueueCommand.__super__.constructor.apply(this, arguments);
   }
 
-  QueueCommand.prototype.regex = /queue|playing/;
+  QueueCommand.prototype.regex = /queue|\splaying/;
 
   QueueCommand.prototype.run = function(cb) {
     var playing, queue, response;

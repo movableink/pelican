@@ -1,9 +1,8 @@
 var SlackCommand;
 
 SlackCommand = (function() {
-  function SlackCommand(api, message, io) {
+  function SlackCommand(api, message) {
     this.api = api;
-    this.io = io;
     this.message = message;
     this.text = message.text || "";
   }

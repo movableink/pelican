@@ -10,4 +10,3 @@ server = http.createServer(app).listen app.get('port'), ->
 # Run WS server
 io = require('socket.io').listen(server)
 socket io, app.get('songs')
-slack.setSocket io

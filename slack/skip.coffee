@@ -1,10 +1,11 @@
 SlackCommand = require '../slack_command.js'
 
 class SkipCommand extends SlackCommand
-  regex: /^skip/
+  regex: /^skip|^next/
 
   run: (cb) ->
-    @api.songs.shift()
+    @api.songs.paused = false
+    @api.songs.next()
 
     cb ":next-track: Skipping track"
 

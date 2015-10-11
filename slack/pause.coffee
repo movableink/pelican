@@ -4,7 +4,7 @@ class PauseCommand extends SlackCommand
   regex: /^pause|stop$/
 
   run: (cb) ->
-    @io.sockets.emit 'pause'
+    @api.songs.pause()
     cb ":pause: Paused"
 
 module.exports = PauseCommand

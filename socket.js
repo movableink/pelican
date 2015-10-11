@@ -4,7 +4,7 @@ module.exports = function(io, songs) {
       return socket.emit('reset', songs.toJSON());
     });
     socket.on('whatsPlaying?', function() {
-      if (songs.length) {
+      if (songs.length && !songs.paused) {
         return socket.emit('songChange', songs.first().toJSON());
       } else {
         return socket.emit('songChange', false);
@@ -23,8 +23,14 @@ module.exports = function(io, songs) {
   songs.on('change', function(song) {
     return io.sockets.emit('change', song);
   });
-  return songs.on('next', function(song) {
+  songs.on('next', function(song) {
     return io.sockets.emit('songChange', song);
+  });
+  songs.on('pause', function() {
+    return io.sockets.emit('pause');
+  });
+  return songs.on('unpause', function() {
+    return io.sockets.emit('unpause');
   });
 };
 

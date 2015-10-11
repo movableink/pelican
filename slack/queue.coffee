@@ -1,7 +1,7 @@
 SlackCommand = require '../slack_command.js'
 
 class QueueCommand extends SlackCommand
-  regex: /queue|playing/
+  regex: /queue|\splaying/
 
   run: (cb) ->
     queue = ""

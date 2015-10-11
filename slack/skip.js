@@ -11,10 +11,11 @@ SkipCommand = (function(superClass) {
     return SkipCommand.__super__.constructor.apply(this, arguments);
   }
 
-  SkipCommand.prototype.regex = /^skip/;
+  SkipCommand.prototype.regex = /^skip|^next/;
 
   SkipCommand.prototype.run = function(cb) {
-    this.api.songs.shift();
+    this.api.songs.paused = false;
+    this.api.songs.next();
     return cb(":next-track: Skipping track");
   };
 

@@ -14,7 +14,7 @@ UnpauseCommand = (function(superClass) {
   UnpauseCommand.prototype.regex = /^(play|unpause)$/;
 
   UnpauseCommand.prototype.run = function(cb) {
-    this.io.sockets.emit('unpause');
+    this.api.songs.unpause();
     return cb(":play: Unpaused");
   };
 

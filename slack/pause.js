@@ -14,7 +14,7 @@ PauseCommand = (function(superClass) {
   PauseCommand.prototype.regex = /^pause|stop$/;
 
   PauseCommand.prototype.run = function(cb) {
-    this.io.sockets.emit('pause');
+    this.api.songs.pause();
     return cb(":pause: Paused");
   };
 

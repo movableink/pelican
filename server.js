@@ -16,6 +16,4 @@ io = require('socket.io').listen(server);
 
 socket(io, app.get('songs'));
 
-slack.setSocket(io);
-
 //# sourceMappingURL=server.js.map

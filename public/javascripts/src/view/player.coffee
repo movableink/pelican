@@ -33,10 +33,17 @@ define [
         @unpause()
 
     pause: ->
+      console.log 'pausing'
       @$yt.tubeplayer 'pause'
 
     unpause: ->
-      @$yt.tubeplayer 'play'
+      if @$yt.tubeplayer('player').getPlayerState() < 3 # player is playing or paused
+        console.log 'unpausing'
+        @$yt.tubeplayer 'play'
+      else
+        # unpausing when not playing, just get a new song
+        console.log 'starting playing'
+        @update()
 
 		end: ->
 			@model.next()
