@@ -1,6 +1,6 @@
-# Pelican [![Build Status](https://secure.travis-ci.org/fragphace/pelican.png?branch=master)](http://travis-ci.org/fragphace/pelican)
+# Pelican
 
-YouTube web server with real-time queue. 
+YouTube web server with real-time queue.
 Ideal as a music server in your workplace.
 
 ## Installation
@@ -26,7 +26,7 @@ More information: `pelican -h`
 
 ## Changelog
 
-**0.0.12** *2013-01-13* 
+**0.0.12** *2013-01-13*
 
 * More informative `pelican start` output
 * Couple of bug fixes
