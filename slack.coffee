@@ -28,7 +28,7 @@ slack.on 'message', (message) ->
   return unless channel.name is MUSIC_CHANNEL_NAME
 
   user = slack.getUserByID(message.user)
-  return if user?.name is BOT_NAME
+  return if user?.name is BOT_NAME or not user?.name
 
   commands.forEach (command) ->
     p = new command(api, message)

@@ -44,7 +44,7 @@ slack.on('message', function(message) {
     return;
   }
   user = slack.getUserByID(message.user);
-  if ((user != null ? user.name : void 0) === BOT_NAME) {
+  if ((user != null ? user.name : void 0) === BOT_NAME || !(user != null ? user.name : void 0)) {
     return;
   }
   return commands.forEach(function(command) {
