@@ -1,4 +1,4 @@
-var app, express, flash, path, routes, slack;
+var app, express, flash, path, routes;
 
 express = require('express');
 
@@ -9,8 +9,6 @@ path = require('path');
 flash = require('connect-flash');
 
 app = express();
-
-slack = require('./slack');
 
 app.configure(function() {
   app.set('port', process.env.PORT || 3000);

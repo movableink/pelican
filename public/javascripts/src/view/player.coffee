@@ -43,7 +43,7 @@ define [
       else
         # unpausing when not playing, just get a new song
         console.log 'starting playing'
-        @update()
+        @model.fetch()
 
 		end: ->
 			@model.next()

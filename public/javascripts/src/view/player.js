@@ -42,7 +42,7 @@ define(['backbone', 'mustache', 'text!/templates/player.tmpl', 'plugin/jquery.tu
         return this.$yt.tubeplayer('play');
       } else {
         console.log('starting playing');
-        return this.update();
+        return this.model.fetch();
       }
     },
     end: function() {

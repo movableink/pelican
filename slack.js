@@ -1,98 +1,119 @@
-var BOT_NAME, MUSIC_CHANNEL_NAME, Slack, api, autoMark, autoReconnect, commands, files, fs, slack, slackToken;
+var Slack, SlackClient, api, fs,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-Slack = require('slack-client');
+SlackClient = require('slack-client');
 
 api = require('./routes/api');
 
 fs = require('fs');
 
-MUSIC_CHANNEL_NAME = process.env.MUSIC_CHANNEL_NAME || "music";
+Slack = (function() {
+  Slack.prototype.commands = [];
 
-BOT_NAME = process.env.BOT_NAME || "jukebox";
-
-commands = [];
-
-files = fs.readdirSync('./slack/');
-
-files.forEach(function(file) {
-  if (file.match(/\.js$/)) {
-    return commands.push(require("./slack/" + file));
+  function Slack(channelName) {
+    var autoMark, autoReconnect, slackToken;
+    this.channelName = channelName;
+    this.error = bind(this.error, this);
+    this.displaySong = bind(this.displaySong, this);
+    this.message = bind(this.message, this);
+    this.open = bind(this.open, this);
+    this.loadCommands();
+    slackToken = process.env.SLACK_TOKEN;
+    autoReconnect = true;
+    autoMark = true;
+    this.client = new SlackClient(slackToken, autoReconnect, autoMark);
+    this.client.on('open', this.open);
+    this.client.on('message', this.message);
+    this.client.on('error', this.error);
+    api.songs.on('next', this.displaySong);
   }
-});
 
-console.log("Loaded commands: " + (commands.map(function(command) {
-  return command.name;
-}).join(', ')));
+  Slack.prototype.login = function() {
+    return this.client.login();
+  };
 
-slackToken = process.env.SLACK_TOKEN;
+  Slack.prototype.channel = function() {
+    return this._channel != null ? this._channel : this._channel = this.client.getChannelByName(this.channelName);
+  };
 
-autoReconnect = true;
-
-autoMark = true;
-
-slack = new Slack(slackToken, autoReconnect, autoMark);
-
-slack.on('open', function() {
-  console.log("Connected to " + slack.team.name + " as " + slack.self.name);
-  return console.log("  with bot name " + BOT_NAME + " listening in channel " + MUSIC_CHANNEL_NAME);
-});
-
-slack.on('message', function(message) {
-  var channel, user;
-  channel = slack.getChannelGroupOrDMByID(message.channel);
-  if (channel.name !== MUSIC_CHANNEL_NAME) {
-    return;
-  }
-  user = slack.getUserByID(message.user);
-  if ((user != null ? user.name : void 0) === BOT_NAME || !(user != null ? user.name : void 0)) {
-    return;
-  }
-  return commands.forEach(function(command) {
-    var p;
-    p = new command(api, message);
-    if (p.matches()) {
-      console.log("Matched command " + p.constructor.name);
-      return p.run(function(response) {
-        if (typeof response === "string") {
-          channel.send(response);
+  Slack.prototype.loadCommands = function() {
+    var files;
+    this.commands = [];
+    files = fs.readdirSync('./slack/');
+    files.forEach((function(_this) {
+      return function(file) {
+        if (file.match(/\.js$/)) {
+          return _this.commands.push(require("./slack/" + file));
         }
-        if (typeof response === "object") {
-          return channel.postMessage({
-            as_user: true,
-            text: response.fallback,
-            attachments: [response]
+      };
+    })(this));
+    return console.log("Loaded commands: " + (this.commands.map(function(c) {
+      return c.name;
+    }).join(', ')));
+  };
+
+  Slack.prototype.open = function() {
+    return console.log(["Connected to " + this.client.team.name, "as " + this.client.self.name, "listening in channel " + this.channelName].join(' '));
+  };
+
+  Slack.prototype.message = function(message) {
+    var user;
+    if (message.channel !== this.channel().id) {
+      return;
+    }
+    user = this.client.getUserByID(message.user);
+    if ((user != null ? user.name : void 0) === this.client.self.name || !(user != null ? user.name : void 0)) {
+      return;
+    }
+    return this.commands.forEach((function(_this) {
+      return function(command) {
+        var p;
+        p = new command(api, message);
+        if (p.matches()) {
+          console.log("Matched command " + p.constructor.name);
+          return p.run(function(response) {
+            if (typeof response === "string") {
+              _this.channel().send(response);
+            }
+            if (typeof response === "object") {
+              return _this.channel().postMessage({
+                as_user: true,
+                text: response.fallback,
+                attachments: [response]
+              });
+            }
           });
         }
-      });
-    }
-  });
-});
-
-api.songs.on('next', function(song) {
-  var channel, response;
-  if (!song) {
-    return;
-  }
-  response = {
-    fallback: "Playing track",
-    title: song.get('title'),
-    title_link: song.get('url'),
-    thumb_url: song.get('thumbnail'),
-    text: ":play: Now playing"
+      };
+    })(this));
   };
-  channel = slack.getChannelByName(MUSIC_CHANNEL_NAME);
-  return channel.postMessage({
-    as_user: true,
-    attachments: [response]
-  });
-});
 
-slack.on('error', function(err) {
-  return console.error("Error", err);
-});
+  Slack.prototype.displaySong = function(song) {
+    var response;
+    if (!song) {
+      return;
+    }
+    response = {
+      fallback: "Playing track",
+      title: song.get('title'),
+      title_link: song.get('url'),
+      thumb_url: song.get('thumbnail'),
+      text: ":play: Now playing"
+    };
+    return this.channel().postMessage({
+      as_user: true,
+      attachments: [response]
+    });
+  };
 
-slack.login();
+  Slack.prototype.error = function(err) {
+    return console.error("Error", err);
+  };
 
-module.exports = slack;
+  return Slack;
+
+})();
+
+module.exports = Slack;
 
 //# sourceMappingURL=slack.js.map

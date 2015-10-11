@@ -1,4 +1,4 @@
-var app, http, io, server, slack, socket;
+var Slack, app, http, io, server, slack, socket;
 
 http = require('http');
 
@@ -6,7 +6,11 @@ app = require('./app.js');
 
 socket = require('./socket.js');
 
-slack = require('./slack.js');
+Slack = require('./slack.js');
+
+slack = new Slack(process.env.MUSIC_CHANNEL_NAME || "music");
+
+slack.login();
 
 server = http.createServer(app).listen(app.get('port'), function() {
   return console.log("Express server listening on port " + app.get('port'));

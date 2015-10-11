@@ -1,66 +1,76 @@
-Slack = require 'slack-client'
+SlackClient = require 'slack-client'
 api = require './routes/api'
 fs = require 'fs'
 
-MUSIC_CHANNEL_NAME = process.env.MUSIC_CHANNEL_NAME or "music"
-BOT_NAME = process.env.BOT_NAME or "jukebox"
+class Slack
+  commands: []
 
-commands = []
+  constructor: (@channelName) ->
+    @loadCommands()
 
-files = fs.readdirSync './slack/'
-files.forEach (file) ->
-  commands.push require("./slack/#{file}") if file.match(/\.js$/)
+    slackToken = process.env.SLACK_TOKEN
+    autoReconnect = true
+    autoMark = true
 
-console.log "Loaded commands: #{commands.map((command) -> command.name).join(', ')}"
+    @client = new SlackClient(slackToken, autoReconnect, autoMark)
+    @client.on 'open', @open
+    @client.on 'message', @message
+    @client.on 'error', @error
+    api.songs.on 'next', @displaySong
 
-slackToken = process.env.SLACK_TOKEN
-autoReconnect = true
-autoMark = true
+  login: ->
+    @client.login()
 
-slack = new Slack(slackToken, autoReconnect, autoMark)
+  channel: ->
+    @_channel ?= @client.getChannelByName(@channelName)
 
-slack.on 'open', ->
-  console.log "Connected to #{slack.team.name} as #{slack.self.name}"
-  console.log "  with bot name #{BOT_NAME} listening in channel #{MUSIC_CHANNEL_NAME}"
+  loadCommands: ->
+    @commands = []
+    files = fs.readdirSync './slack/'
+    files.forEach (file) =>
+      @commands.push require("./slack/#{file}") if file.match(/\.js$/)
 
-slack.on 'message', (message) ->
-  channel = slack.getChannelGroupOrDMByID(message.channel)
-  return unless channel.name is MUSIC_CHANNEL_NAME
+    console.log "Loaded commands: #{@commands.map((c) -> c.name).join(', ')}"
 
-  user = slack.getUserByID(message.user)
-  return if user?.name is BOT_NAME or not user?.name
+  open: =>
+    console.log ["Connected to #{@client.team.name}",
+                 "as #{@client.self.name}",
+                 "listening in channel #{@channelName}"].join(' ')
 
-  commands.forEach (command) ->
-    p = new command(api, message)
-    if p.matches()
-      console.log "Matched command #{p.constructor.name}"
-      p.run (response) ->
-        if typeof(response) is "string"
-          channel.send response
-        if typeof(response) is "object"
-          channel.postMessage
-            as_user: true
-            text: response.fallback
-            attachments: [response]
+  message: (message) =>
+    return unless message.channel is @channel().id
 
-api.songs.on 'next', (song) ->
-  return unless song
+    user = @client.getUserByID(message.user)
+    return if user?.name is @client.self.name or not user?.name
 
-  response =
-    fallback: "Playing track"
-    title: song.get('title')
-    title_link: song.get('url')
-    thumb_url: song.get('thumbnail')
-    text: ":play: Now playing"
+    @commands.forEach (command) =>
+      p = new command(api, message)
+      if p.matches()
+        console.log "Matched command #{p.constructor.name}"
+        p.run (response) =>
+          if typeof(response) is "string"
+            @channel().send response
+          if typeof(response) is "object"
+            @channel().postMessage
+              as_user: true
+              text: response.fallback
+              attachments: [response]
 
-  channel = slack.getChannelByName(MUSIC_CHANNEL_NAME)
-  channel.postMessage
-    as_user: true
-    attachments: [response]
+  displaySong: (song) =>
+    return unless song
 
-slack.on 'error', (err) ->
-  console.error "Error", err
+    response =
+      fallback: "Playing track"
+      title: song.get('title')
+      title_link: song.get('url')
+      thumb_url: song.get('thumbnail')
+      text: ":play: Now playing"
 
-slack.login()
+    @channel().postMessage
+      as_user: true
+      attachments: [response]
 
-module.exports = slack
+  error: (err) =>
+    console.error "Error", err
+
+module.exports = Slack

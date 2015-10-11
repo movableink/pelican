@@ -3,7 +3,6 @@ routes = require './routes'
 path = require 'path'
 flash = require 'connect-flash'
 app = express()
-slack = require './slack'
 
 # Configuration
 app.configure ->
