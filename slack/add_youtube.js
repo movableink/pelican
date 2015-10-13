@@ -26,21 +26,19 @@ AddYoutubeCommand = (function(superClass) {
     return this.api.songs.fetch({
       complete: (function(_this) {
         return function(model, results, valid, invalid) {
-          var response, song;
+          var response, song, t;
           song = results[0];
           if (song) {
-            response = {
-              fallback: "Added track",
-              title: song.get('title'),
-              title_link: song.get('url'),
-              fields: [
-                {
-                  title: 'Songs in queue before this one',
-                  value: _this.api.songs.length - 1
-                }
-              ],
-              thumb_url: song.get('thumbnail')
-            };
+            if (_this.api.songs.length === 0) {
+              t = "sometime";
+            } else if (_this.api.songs.length === 1) {
+              t = "now";
+            } else if (_this.api.songs.length === 2) {
+              t = "next";
+            } else {
+              t = "after " + (_this.api.songs.length - 1) + " other songs";
+            }
+            response = "Added track " + (_this.song.get('title')) + ", queued to play " + t;
             return cb(response);
           }
         };

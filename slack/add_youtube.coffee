@@ -15,12 +15,16 @@ class AddYoutubeCommand extends SlackCommand
         song = results[0]
 
         if song
-          response =
-            fallback: "Added track"
-            title: song.get('title')
-            title_link: song.get('url')
-            fields: [ { title: 'Songs in queue before this one', value: @api.songs.length - 1 } ]
-            thumb_url: song.get('thumbnail')
+          if @api.songs.length is 0
+            t = "sometime"
+          else if @api.songs.length is 1
+            t = "now"
+          else if @api.songs.length is 2
+            t = "next"
+          else
+            t = "after #{@api.songs.length - 1} other songs"
+
+          response = "Added track #{@song.get('title')}, queued to play #{t}"
 
           cb response
 
