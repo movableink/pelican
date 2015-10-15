@@ -24,7 +24,7 @@ class AddYoutubeCommand extends SlackCommand
           else
             t = "after #{@api.songs.length - 1} other songs"
 
-          response = "Added track #{@song.get('title')}, queued to play #{t}"
+          response = "Added track #{song.get('title')}, queued to play #{t}"
 
           cb response
 

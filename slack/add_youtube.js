@@ -38,7 +38,7 @@ AddYoutubeCommand = (function(superClass) {
             } else {
               t = "after " + (_this.api.songs.length - 1) + " other songs";
             }
-            response = "Added track " + (_this.song.get('title')) + ", queued to play " + t;
+            response = "Added track " + (song.get('title')) + ", queued to play " + t;
             return cb(response);
           }
         };
