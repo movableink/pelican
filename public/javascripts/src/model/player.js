@@ -23,7 +23,9 @@ define(['backbone'], function(Backbone) {
       })(this));
     },
     next: function() {
-      return this.socket.emit('songNext');
+      if (document.location.hash !== '#secondary') {
+        return this.socket.emit('songNext');
+      }
     },
     fetch: function() {
       if (!this.socket) {

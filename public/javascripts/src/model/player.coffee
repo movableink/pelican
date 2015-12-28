@@ -17,7 +17,8 @@ define ['backbone'], (Backbone) ->
         @fetch()
 
     next: ->
-      @socket.emit 'songNext'
+      if document.location.hash isnt '#secondary'
+        @socket.emit 'songNext'
 
 		fetch: ->
       unless this.socket then return Backbone.Model.prototype.fetch.apply @, arguments
